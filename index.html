@@ -1,0 +1,116 @@
+<!DOCTYPE html><!-- This site was created in Webflow. http://www.webflow.com -->
+
+<!-- Hi there, and welcome. This is Metanet -->
+
+
+
+<head>
+    <meta charset="utf-8" />
+    <title>This is Metanet</title>
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <meta content="Webflow" name="generator" />
+    <link
+        href="b://21af6f1bba0895dd67c3a5513a77cfd1eeadce0db5bed2fd2f163484c66c3cca"
+        rel="stylesheet" type="text/css" />
+
+    <link href="b://c626607e9fb1a130b41cd6b640d61da3dc6942632b9487b857717e94f8f9fc1b" rel="shortcut icon" type="image/x-icon" />
+    
+</head>
+
+<body class="body">
+    <div class="section">
+        <h1 class="heading">Is This Meta Enough?</h1>
+    </div>
+    <div class="section-3">
+        <div class="div-block">
+            <div class="text-block">Write something and swipe that MoneyButton to add your text to the blockchain.</div>
+            <div class="form-block w-form">
+                <form id="email-form" name="email-form" data-name="Email Form" class="form">
+                    <script>
+                        // opReturnScript is the data included in the Bitcoin script"
+                        var opReturnScript = '';
+                        // the data included in the opreturn must be hex encoded.
+                        function convertToHex(str) {
+                            var hex = '';
+                            for (var i = 0; i < str.length; i++) {
+                                hex += '' + str.charCodeAt(i).toString(16);
+                            }
+                            return hex;
+                        }
+                        //this function converts the user's inputted text in a format that is compatible with both the Bitcoin OP_RETURN script as well as _unwriter's B protocol
+                        //the script is "OP_RETURN" + the B namespace which is 19HxigV4QyBv3tHpQVcUEQyq1pzZVdoAut + your text + "text/html" + "utf-8" + "yourText.txt" all encoded in hexadecimal except "OP_RETURN" obviously
+                        function convertTextToOpReturn() {
+                            opReturnScript = "OP_RETURN " + "31394878696756345179427633744870515663554551797131707a5a56646f417574 " + convertToHex(document.getElementById('field').value) + " 746578742f6d61726b646f776e 5554462d38 " + convertToHex('yourtext.txt');
+                            
+                            //the money button must be rerendered every time the user inputs text in order to submit the correct opreturn data
+                            moneyButton.render(div, {
+                                onPayment: onPaymentCallback,
+                                outputs: [{
+                                    amount: "0",
+                                    currency: "USD",
+                                    type: 'SCRIPT',
+                                    script: opReturnScript
+                                }]
+                            })
+                        }
+
+                    </script>
+                    <textarea oninput="convertTextToOpReturn()" id="field" name="field" maxlength="5000"
+                        placeholder="Your text goes here" class="textarea w-input"></textarea>
+                    <div class="div-block-2">
+                        <script src="https://www.moneybutton.com/moneybutton.js"></script>
+                        <div id="my-money-button"></div>
+
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+    <div class="section-4">
+        <div class="div-block-3">
+            <div id='txidcontainer'>
+                
+            </div>
+            <div id="linkcontainer" class="div-block-5">
+                
+            </div>
+        </div>
+    </div>
+    <div class="section-2"><img src="b://48b9cd461af86e29aa9c6a76f8a357b0e2fa97915e29ebc1c99d23c733d4df80" width="200"
+            height="200" alt="" class="image-2" /></div>
+
+    <script>
+      
+        //this function is called after the user swipes the money button and allows the page to display the txid
+        function onPaymentCallback(payment) {
+            //updates page with the tx id
+            var txidTextContainer=document.getElementById('txidcontainer');
+            txidTextContainer.innerHTML = '<div class="text-block-3">' + "txid: " + payment.txid + "</div>"
+            
+            //provides the user with a link that they can click
+            var linkContainer=document.getElementById('linkcontainer');
+            linkContainer.innerHTML='<div class="text-block-2">Check out your text </div>'+'<a href="' +"b://"+payment.txid +'" target="_black" class="link"> here</a>'+'<div class="text-block-2">!</div>'
+                
+
+            
+
+        }
+
+        
+        //this renders the moneybutton for the first time
+        var div = document.getElementById('my-money-button')
+        moneyButton.render(div, {
+            onPayment: onPaymentCallback,
+            outputs: [{
+                amount: "0",
+                currency: "USD",
+                type: 'SCRIPT',
+                script: opReturnScript
+            }]
+        })
+    </script>
+
+</body>
+
+</html>
